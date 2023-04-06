@@ -44,6 +44,7 @@ def five_scores(labels, predictions):
     return accuracy, auc_value, precision, recall, fscore
 
 def train(train_dataloader, epoch):
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     model = torchvision.models.resnet50(weights="DEFAULT", progress=True)
     model.conv1 = torch.nn.Conv2d(
         1, 64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False
@@ -54,7 +55,7 @@ def train(train_dataloader, epoch):
         torch.nn.Dropout(0.5),
         torch.nn.Linear(model.fc.in_features, 3),
     )
-
+    model.to(device)
     criterion = torch.nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(model.parameters())
     scheduler = torch.optim.lr_scheduler.StepLR(optimizer, 5)
@@ -66,14 +67,14 @@ def train(train_dataloader, epoch):
         model.train()
         for target, input in train_dataloader:
             optimizer.zero_grad()
-            pred = model(input)
+            pred = model(input.to(device))
             # print(type(target))
             # target = torch.tensor(target)
-            loss = criterion(pred, target)
+            loss = criterion(pred, target.to(device))
             loss.backward()
             optimizer.step()
-            preds.extend(pred)
-            targets.extend(target)
+            preds.extend(pred.cpu().detach().numpy())
+            targets.extend(target.cpu().detach().numpy())
         scheduler.step()
     score_dict['acc'], score_dict['auc'], score_dict['precision'], score_dict['recall'], score_dict['fscore'] = five_scores(targets,preds)
     torch.save(model.state_dict(),'state_dict.pt')
@@ -83,7 +84,7 @@ def train(train_dataloader, epoch):
 
 if __name__ == "__main__":
     train_dataloader, test_dataloader = load_data(
-        path="/Volumes/T7 Shield/6211H_Final/data/Chest_X-ray_(Covid-19&Pneumonia)/",
+        path="../../../data/Chest_X-ray_(Covid-19&Pneumonia)/",
         shuffle=True,
         seed=2023,
         bs=64,
