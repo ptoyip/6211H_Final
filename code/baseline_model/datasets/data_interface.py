@@ -87,7 +87,6 @@ class DataInterface(pl.LightningDataModule):
     def load_data_module(self):
         camel_name = "".join([i.capitalize() for i in (self.dataset_name).split("_")])
         try:
-            print(f'camel_name is {camel_name}')
             self.data_module = getattr(
                 importlib.import_module(f"datasets.{self.dataset_name}"), camel_name
             )

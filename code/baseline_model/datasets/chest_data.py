@@ -12,7 +12,7 @@ transform = transforms.Compose(
         transforms.RandomRotation(30,fill=(0,)),
         transforms.Resize((256,256)),
         transforms.ToTensor(),
-        transforms.Normalize(0.5,0.25)
+        # transforms.Normalize(0.5,0.25)
         # transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225)),
     ]
 )
@@ -26,10 +26,11 @@ class ChestData(torch.utils.data.Dataset):
         self.labels = [] # ['COVID19', 'NORMAL', 'PNEUMONIA']
         dataset_path = os.path.join(self.dataset_cfg.data_dir,state)
         for folder in sorted(Path(dataset_path).iterdir()):
-            self.labels.append(folder.stem)
-            for file in folder.iterdir():
-                file = str(file.resolve())
-                self.data_path.append([folder.stem, file])
+            if os.path.isdir(folder):
+                self.labels.append(folder.stem)
+                for file in folder.iterdir():
+                    file = str(file.resolve())
+                    self.data_path.append([folder.stem, file])
 
         if self.dataset_cfg.data_shuffle:
             shuffle(self.data_path)

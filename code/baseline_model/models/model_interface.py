@@ -26,11 +26,11 @@ class ModelInterface(pl.LightningModule):
     # ---->init
     def __init__(self, model, loss, optimizer, **kargs):
         super(ModelInterface, self).__init__()
+        self.n_classes = model.n_classes
         self.save_hyperparameters()
         self.load_model()
         self.loss = create_loss(loss)
         self.optimizer = optimizer
-        self.n_classes = model.n_classes
         self.log_path = kargs["log"]
 
         # ---->acc
@@ -222,17 +222,17 @@ class ModelInterface(pl.LightningModule):
                 torch.nn.Dropout(0.5),
                 torch.nn.Linear(2048, 1000),
                 torch.nn.Dropout(0.5),
-                torch.nn.Linear(1000, 3),
+                torch.nn.Linear(1000, self.n_classes),
                 torch.nn.Softmax(dim=1),
                 )
             self.model = model
             return
         if "_" in name:
-            camel_name = "".join([i.capitalize() for i in name.split("_")])
+            model_name = "".join([i.capitalize() for i in name.split("_")])
         else:
-            camel_name = name
+            model_name = name
         try:
-            Model = getattr(importlib.import_module(f"models.{name}"), camel_name)
+            Model = getattr(importlib.import_module(f"models.{name}"), model_name)
         except:
             raise ValueError("Invalid Module File Name or Invalid Class Name!")
         self.model = self.instancialize(Model)

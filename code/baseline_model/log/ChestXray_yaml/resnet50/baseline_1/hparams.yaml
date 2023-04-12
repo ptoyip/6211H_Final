@@ -1,0 +1,107 @@
+data: &id003 !!python/object/new:addict.addict.Dict
+  args:
+  - !!python/tuple
+    - dataset_name
+    - chest_data
+  - !!python/tuple
+    - data_shuffle
+    - false
+  - !!python/tuple
+    - data_dir
+    - /jhcnas2/home/yipkc/ChestXray/
+  - !!python/tuple
+    - fold
+    - '0'
+  - !!python/tuple
+    - nfold
+    - 4
+  - !!python/tuple
+    - train_dataloader
+    - &id001 !!python/object/new:addict.addict.Dict
+      args:
+      - !!python/tuple
+        - batch_size
+        - 1
+      - !!python/tuple
+        - num_workers
+        - 8
+      dictitems:
+        batch_size: 1
+        num_workers: 8
+      state: *id001
+  - !!python/tuple
+    - test_dataloader
+    - &id002 !!python/object/new:addict.addict.Dict
+      args:
+      - !!python/tuple
+        - batch_size
+        - 1
+      - !!python/tuple
+        - num_workers
+        - 8
+      dictitems:
+        batch_size: 1
+        num_workers: 8
+      state: *id002
+  dictitems:
+    data_dir: /jhcnas2/home/yipkc/ChestXray/
+    data_shuffle: false
+    dataset_name: chest_data
+    fold: '0'
+    nfold: 4
+    test_dataloader: *id002
+    train_dataloader: *id001
+  state: *id003
+log: !!python/object/apply:pathlib.PosixPath
+- log
+- ChestXray_yaml
+- resnet50
+- fold0
+loss: &id004 !!python/object/new:addict.addict.Dict
+  args:
+  - !!python/tuple
+    - base_loss
+    - CrossEntropyLoss
+  dictitems:
+    base_loss: CrossEntropyLoss
+  state: *id004
+model: &id005 !!python/object/new:addict.addict.Dict
+  args:
+  - !!python/tuple
+    - name
+    - ResNet50
+  - !!python/tuple
+    - n_classes
+    - 3
+  dictitems:
+    n_classes: 3
+    name: ResNet50
+  state: *id005
+optimizer: &id006 !!python/object/new:addict.addict.Dict
+  args:
+  - !!python/tuple
+    - opt
+    - adam
+  - !!python/tuple
+    - lr
+    - 0.001
+  - !!python/tuple
+    - opt_eps
+    - null
+  - !!python/tuple
+    - opt_betas
+    - null
+  - !!python/tuple
+    - momentum
+    - null
+  - !!python/tuple
+    - weight_decay
+    - 1.0e-05
+  dictitems:
+    lr: 0.001
+    momentum: null
+    opt: adam
+    opt_betas: null
+    opt_eps: null
+    weight_decay: 1.0e-05
+  state: *id006
